@@ -4,7 +4,7 @@ on progress: balcony watering system
 
 ## hardware
 
-### pump + connection to Gardena system
+### pump + connection to Gardena Micro-Drip System
  * [Comet Tauchpumpe Vip Plus 12 V 20 Liter](https://www.camping-kaufhaus.com/rund-ums-fahrzeug/wasser/sanitar/wasserpumpen/comet-tauchpumpe-vip-plus-12-v-20-liter-lose)
  * [Glasklarschlauch PVC Ø 10 mm (3/8") 1Meter](https://www.obi.de/gartenschlaeuche/glasklarschlauch-pvc-10-mm-3-8-meterware/p/8395949)
  * [PVC Schlauch-Verbinder 13 mm (1/2") Ø, 10 mm](https://www.conrad.de/de/p/barwig-533463-pvc-schlauch-verbinder-13-mm-1-2-10-mm-533463.html)
@@ -15,7 +15,7 @@ on progress: balcony watering system
 ### other hardware
  * [water level sensor](https://de.aliexpress.com/item/AC-1500-v-Imin-Fl-ssiges-Wasser-Level-Sensor-Horizontale-Float-Schalter-F-r-Aquarien-Fisch/32961753901.html)
 
-### gardena systen
+### Gardena Micro-Drip System
  * Gardena Micro-Drip-System Basisgerät 1000
  * Gardena Micro-Drip-System Rohrhalter: Leitungshalter mit 4.6 mm (3/16")
  * Gardena Micro-Drip-System Regulierbarer Reihentropfer: Druckausgleichender Tropfer
