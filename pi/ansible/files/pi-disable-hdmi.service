@@ -1,0 +1,6 @@
+[Unit]
+Description=PI disable HDMI (save power)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/tvservice -o

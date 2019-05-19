@@ -1,0 +1,125 @@
+---
+- hosts: localhost
+  tasks:
+    - name: "install packages"
+      apt:
+        name: "{{ item }}"
+        state: installed
+      with_items:
+        - python3-rpi.gpio
+    - name: "install hdmi disable service unit"
+      copy:
+        src: pi-disable-hdmi.service
+        dest: /etc/systemd/system/pi-disable-hdmi.service
+        owner: root
+        group: root
+        mode: 0644
+    - name: "enable pi-disable-hdmi.service"
+      systemd:
+        name: pi-disable-hdmi.service
+        daemon_reload: yes
+        enabled: yes
+        state: started
+    - name: "install ssh key"
+      authorized_key:
+        exclusive: yes
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAgEAo0ppd5kF2Ybdk2zadGEvecwIJysUItYlbajbs6TlDKZzRtuVKhOesXCKTiXaLrSYzhh/UZzWt45YqD4AAZA0hGRM5J1+63oPi25mw1FCAaQM/CsxdbAhtslc4vtlU/GcgCEIdUOJw1Lo65XGeekFfpu0as7PLEDtSJyhNRS3IWhwLy28M3sFaSM3NvZedKIHIAcXg6P7x/lME8JheCc2D241mJwnzf8p841yRxm7DifDtVaY+m9BDXYt+A1XM2J8NPg9OWikDn6tQmWzNW2b/cNT8NkuTxqpWH5PTsp4JAdZ3OeTLRXfjFD3laz+tzjCG/44aPw+pReE4sewAqSmlny2zUOkx6JQ7WwlUPx5nyrg2d4IJYMI+WE8xxJcP7YtnwcVVtxolR2CA78oUtKGlzspMkjhNuGq2xar5q1iZSRH4mdHOTVLK54d1j5heyhmQynUbY0Ju+RfcBS5n0crlJ87lYOROmBYVYFSHV3SCLP6EXd8EurnAGnF3ocSVSK53V4l4AIF8984n/8p0KRhdvEkce+eugB9Aqt/5XUGURbROjb6axq6LFLkg7i4w3yyB1TxZ7NNFlJyj/I/2A5+hsEL3cPyOjwrH7c8J85d6VPqq458PYFFz/VrwhWamfvxyuxWFHJL3jrk1LnjBa6UgelichmasOPOZHW4M6LdP7k="
+        user: pi
+        state: present
+    - name: "disable services"
+      systemd:
+        state: stopped
+        enabled: no
+        masked: yes
+        name: "{{ item }}"
+      with_items:
+        - cron.service
+        - apt-daily-upgrade.timer
+        - apt-daily.timer
+        - systemd-rfkill.service
+        - systemd-rfkill.socket
+    - name: "disable tmpfiles /etc/mtab"
+      lineinfile:
+        name: /usr/lib/tmpfiles.d/debian.conf
+        state: absent
+        regexp: '^L\+ /etc/mtab.*'
+    - name: "disable tmpfiles: coredumps"
+      lineinfile:
+        name: /usr/lib/tmpfiles.d/systemd.conf
+        state: absent
+        regexp: '^d /var/lib/systemd/coredump 0755 root root 3d'
+    - name: "disable tmpfiles /usr/lib/tmpfiles.d/sudo.conf"
+      file:
+        name: /usr/lib/tmpfiles.d/sudo.conf
+        state: absent
+    - name: "/var/log as tmpfs"
+      mount:
+        name: /var/log
+        src: tmpfs
+        fstype: tmpfs
+        opts: nodev,nosuid
+        state: present
+    - name: "/var/tmp as tmpfs"
+      mount:
+        name: /var/tmp
+        src: tmpfs
+        fstype: tmpfs
+        opts: nodev,nosuid
+        state: present
+    - name: "/tmp as tmpfs"
+      mount:
+        name: /tmp
+        src: tmpfs
+        fstype: tmpfs
+        opts: nodev,nosuid
+        state: present
+    - name: "PARTUUID of /"
+      shell: "/bin/grep ext4 /etc/fstab | /usr/bin/cut -f 1 -d ' '"
+      register: fstab_root
+    - name: "get PARUUID of /boot"
+      shell: "/bin/grep vfat /etc/fstab | /usr/bin/cut -f 1 -d ' '"
+      register: fstab_boot
+    - name: "/ as ro"
+      mount:
+        name: /
+        src: "{{ fstab_root.stdout }}"
+        opts: defaults,ro,noatime
+        fstype: ext4
+        passno: 1
+        state: present
+    - name: "/boot as ro"
+      mount:
+        name: /boot
+        src: "{{ fstab_boot.stdout }}"
+        opts: defaults,ro
+        fstype: vfat
+        state: present
+    - name: "install Europe/Berlin timezone"
+      file:
+        dest: /etc/localtime
+        src: /usr/share/zoneinfo/Europe/Berlin
+        state: link
+        force: yes
+    - name: "update dpkg tzdate"
+      command: dpkg-reconfigure -f noninteractive tzdata
+    - name: "ensure ssh is running"
+      systemd:
+        name: ssh
+        enabled: True
+    - name: "remove packages"
+      apt:
+        name: "{{ item }}"
+        state: absent
+        purge: yes
+      with_items:
+        - dphys-swapfile
+        - man-db
+        - fake-hwclock
+        - triggerhappy
+        - cifs-utils
+        - samba-common
+        - rsyslog
+        - avahi-daemon
+        - bluez
+        - bluez-firmware
+        - pi-bluetooth
