@@ -7,7 +7,25 @@
         state: installed
       with_items:
         - python3-rpi.gpio
-    - name: "install hdmi disable service unit"
+    - name: "power save: disable LED 1"
+      lineinfile:
+        name: /boot/config.txt
+        state: present
+        regexp: '^dtparam=act_led_trigger=none'
+        line: 'dtparam=act_led_trigger=none'
+    - name: "power save: disable LED 2"
+      lineinfile:
+        name: /boot/config.txt
+        state: present
+        regexp: '^dtparam=act_led_activelow=on'
+        line: 'dtparam=act_led_activelow=on'
+    - name: "power save: disable bluetooth"
+      lineinfile:
+        name: /boot/config.txt
+        state: present
+        regexp: '^dtoverlay=pi3-disable-bt'
+        line: 'dtoverlay=pi3-disable-bt'
+    - name: "install hdmi disable service unit to save power"
       copy:
         src: pi-disable-hdmi.service
         dest: /etc/systemd/system/pi-disable-hdmi.service
