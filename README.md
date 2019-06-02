@@ -14,7 +14,7 @@ on progress: balcony watering system
 
 ### other hardware
  * [water level sensor](https://de.aliexpress.com/item/AC-1500-v-Imin-Fl-ssiges-Wasser-Level-Sensor-Horizontale-Float-Schalter-F-r-Aquarien-Fisch/32961753901.html)
- * [DCF-HSY4 DC12V water magnetic valve](https://www.aliexpress.com/item/Electric-Solenoid-Valve-For-Water-Purifier-Refrigerator-Normally-Closed-DC-12V/32869437179.html)
+ * [DCF-HSY4 DC12V water magnetic valve](https://www.aliexpress.com/item/Electric-Solenoid-Valve-For-Water-Purifier-Refrigerator-Normally-Closed-DC-12V/32869437179.html) (not used)
 
 ### Gardena Micro-Drip System
  * Gardena Micro-Drip-System Basisgerät 1000
