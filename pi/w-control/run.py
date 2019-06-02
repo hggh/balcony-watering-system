@@ -2,11 +2,12 @@
 
 import RPi.GPIO as GPIO
 import time
+import argparse
 
 GPIO.setmode(GPIO.BCM)
 
-WATER_TIME = 10
-
+def cleanup():
+    GPIO.cleanup()
 
 class Relay(object):
     gpio_pin = None
@@ -36,26 +37,42 @@ class WaterLeverSensor(object):
     def water_available(self):
         # sensor needs to be connected to GPIO and 3.3V
         # if sensor is closed HIGH is on GPIO = water no longer available
-        if GPIO.input(self.gpio_pin) == GPIO.HIGH:
+        if int(GPIO.input(self.gpio_pin)) == 1:
             return False
 
-        return True
+        if int(GPIO.input(self.gpio_pin)) == 0:
+            return True
+
+        return None
 
     def _setup(self):
         GPIO.setup(self.gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-w1 = WaterLeverSensor(pin=17)
-r1 = Relay(pin=4)
-r1.on()
 
-time.sleep(5)
+parser = argparse.ArgumentParser(description='Raspberry PI watering system')
+parser.add_argument('--time', type=int, default=60, help='time in seconds')
+args = parser.parse_args()
 
-r1.off()
+w1 = WaterLeverSensor(pin=4)
+r1 = Relay(pin=17)
 
+if w1.water_available() is False:
+    print("no water available")
+    cleanup()
+    exit()
 
-print(w1.water_available())
-print("Sleep")
-time.sleep(5)
-print(w1.water_available())
+try:
+    r1.on()
+    for i in range(args.time):
+        time.sleep(1)
+        if w1.water_available() is False:
+            print("no longer water available")
+            r1.off()
+            break
 
-GPIO.cleanup()
+    r1.off()
+except Exception as e:
+    print(e)
+finally:
+    cleanup()
+
